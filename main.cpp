@@ -1,13 +1,7 @@
 // Projet réalisé par Louis Boilly
 
-#include <Imagine/Images.h>
-#include <Imagine/Graphics.h>
-#include <iostream>
-
-using namespace Imagine;
-using namespace std;
-
-typedef Image<byte> Img;
+#include "outils.h"
+#include "frontiere.h"
 
 int main() {
     // Img est un type representant une image et img est le nom de la variable

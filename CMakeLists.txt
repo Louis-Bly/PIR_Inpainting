@@ -5,5 +5,5 @@ list(APPEND CMAKE_SYSTEM_FRAMEWORK_PATH /Library/Frameworks) #Mac, why not auto?
 find_package(Imagine REQUIRED)
 
 project(Inpainting)
-add_executable(inpainting main.cpp)
+add_executable(inpainting main.cpp frontiere.h outils.h)
 ImagineUseModules(inpainting Graphics)
