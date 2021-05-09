@@ -28,11 +28,51 @@ pixel orthogonal(pixel p){
     return(ortho);
 }
 
-pixel gradient(Img I, pixel p, int W){
-    int dx=max(I[indice(W,p.getx()+1,p.gety())]-I[indice(W,p.getx(),p.gety())],I[indice(W,p.getx(),p.gety())]-I[indice(W,p.getx()-1,p.gety())]);
+pixel gradient(Img I, pixel p, int W, int H){
+    int x=p.getx();
+    int y=p.gety();
+    int dx,dy;
+    if (x==0){
+        dx=I[indice(W,x+1,y)]-I[indice(W,x,y)];
+    }
+    else{
+        if (x==W-1){
+            dx=I[indice(W,x,y)]-I[indice(W,x-1,y)];
+        }
+        else{
+            int dx1=I[indice(W,x+1,y)]-I[indice(W,x,y)];
+            int dx2=I[indice(W,x,y)]-I[indice(W,x-1,y)];
+            if (abs(dx1)>=abs(dx2)){
+                dx=dx1;
+            }
+            else{
+                dx=dx2;
+            }
+        }
+    }
+    if (y==0){
+        dy=I[indice(W,x,y+1)]-I[indice(W,x,y)];
+    }
+    else{
+        if (x==H-1){
+            dy=I[indice(W,x,y)]-I[indice(W,x,y-1)];
+        }
+        else{
+            int dy1=I[indice(W,x,y+1)]-I[indice(W,x,y)];
+            int dy2=I[indice(W,x,y)]-I[indice(W,x,y-1)];
+            if (abs(dy1)>=abs(dy2)){
+                dy=dy1;
+            }
+            else{
+                dy=dy2;
+            }
+        }
+    }
+    pixel grad(dx,dy);
+    return(grad);
 }
 
-void priority(Img I, int P[], frontiere f, int C[], int W){
+void priority(Img I, int P[], frontiere f, int C[], int W, int H){
     for (int i=0; i<f.gettaille(); i++){
         int c=0;
         for (int j=-N/2; j<=N/2; j++){
@@ -42,7 +82,7 @@ void priority(Img I, int P[], frontiere f, int C[], int W){
             }
         }
         c=c/(pow(N,2));
-        P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(I, f.get(i),W)),normale(f.get(i),f)))/alpha;
+        P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(I, f.get(i),W,H)),normale(f.get(i),f)))/alpha;
     }
 }
 
