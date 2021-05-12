@@ -16,3 +16,5 @@ public:
     void affiche(Color c);
 };
 
+bool operator==(pixel p1,pixel p2);
+

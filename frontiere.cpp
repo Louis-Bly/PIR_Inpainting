@@ -54,3 +54,7 @@ void frontiere::affiche(Color c){
         fillRect(front[i].getx(),front[i].gety(),1,1,c);
     }
 }
+
+bool operator==(pixel p1,pixel p2){
+    return(p1.getx()==p2.getx() && p1.gety()==p2.gety());
+}
