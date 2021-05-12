@@ -122,6 +122,23 @@ frontiere def_frontiere(){
     }
 }
 
+void init_confiance(int H, int W, int C[]){
+    int dedans;
+    for (int i=0;i<H;i++) {
+        dedans = 0;
+        for (int j=0;j<W;j++){
+            if (dedans==1){
+                if (C[indice(W,i,j)]==1) dedans = 0;
+                else C[indice(W,i,j)]=1;
+            }
+            else {
+                if (C[indice(W,i,j)]==1) dedans = 1;
+                else C[indice(W,i,j)]=0;
+            }
+        }
+    }
+}
+
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     def_frontiere();
