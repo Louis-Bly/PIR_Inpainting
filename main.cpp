@@ -82,6 +82,33 @@ void priority(Img I, int P[], frontiere f, int C[], int W){
     }
 }
 
+void init_confiance(int H, int W, int C[]){
+    int dedans;
+    for (int y=0;y<H;y++) {
+        dedans = 0;
+        for (int x=0;x<W;x++){
+            cout << dedans << endl;
+            if (dedans==1){
+                if (C[indice(W,x,y)]==0) dedans = 0;
+                else C[indice(W,x,y)]=0;
+            }
+            else {
+                if (C[indice(W,x,y)]==0) dedans = 1;
+                else C[indice(W,x,y)]=1;
+            }
+        }
+    }
+}
+
+void init_affichage(int H, int W, int C[]){
+    for (int y=0;y<H;y++){
+        for (int x=0;x<W;x++){
+            if (C[indice(W,x,y)]==0)
+                fillRect(x,y,1,1,WHITE);
+        }
+    }
+}
+
 frontiere def_frontiere(int width, int C[]){
     frontiere f;
     pixel p0, // Premier sommet
@@ -127,6 +154,8 @@ int main() {
             C[i]=1;
         }
     frontiere f = def_frontiere(width, C);
+    init_confiance(height,width,C);
+    init_affichage(height,width,C);
     endGraphics();
     }
     return 0;
