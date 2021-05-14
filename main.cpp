@@ -83,20 +83,45 @@ void priority(Img I, int P[], frontiere f, int C[], int W){
 }
 
 void init_confiance(int H, int W, int C[]){
-    int dedans;
+    int premiere=1,derniere=-1;
+    int dedans_gauche,dedans_droite;
+    int C_derniere[W];
     for (int y=0;y<H;y++) {
-        dedans = 0;
-        for (int x=0;x<W;x++){
-            if (dedans==1){
-                if (C[indice(W,x,y)]==0) dedans = 0;
+        dedans_gauche = 0;
+        dedans_droite = 0;
+        for (int x=0;x<W/2.;x++){
+            //Pour première ligne modifiée
+            if (premiere==1 and C[indice(W,x,y)]==0){
+                premiere=0;
+                break;
+            }
+            //Avancement par la gauche
+            if (dedans_gauche==1){
+                if (C[indice(W,x,y)]==0) dedans_gauche = 0;
                 else C[indice(W,x,y)]=0;
             }
             else {
-                if (C[indice(W,x,y)]==0) dedans = 1;
-                else C[indice(W,x,y)]=1;
+                if (C[indice(W,x,y)]==0 and C[indice(W,x+1,y)]!=0) {
+                    dedans_gauche = 1;
+                    derniere = y;
+                }
+
             }
+            //Avancement par la droite
+            if (dedans_droite==1){
+                if (C[indice(W,W-x,y)]==0) dedans_droite = 0;
+                else C[indice(W,W-x,y)]=0;
+            }
+            else {
+                if (C[indice(W,W-x,y)]==0 and C[indice(W,W-x-1,y)]!=0) {
+                    dedans_droite = 1;
+                    derniere = y;
+                }
+            }
+            if (derniere==y) for (int i=0;i<W;i++) C_derniere[i]=C[indice(W,x,y)];
         }
     }
+    for (int i=0;i<W;i++) C[indice(W,i,derniere)]=C_derniere[i];
 }
 
 void init_affichage(int H, int W, int C[]){
@@ -107,6 +132,114 @@ void init_affichage(int H, int W, int C[]){
         }
     }
 }
+
+
+
+//Tentative avec une frontiere
+
+void avance(int C[],frontiere chemin,int W){
+    while(chemin.gettaille()>=0) {
+        int x=chemin.get(chemin.gettaille()).getx(),y=chemin.get(chemin.gettaille()).gety();
+        pixel suivant;
+        if (C[indice(W,x,y-1)]!=0) {
+            C[indice(W,x,y-1)]=0;
+            suivant.setx(x);
+            suivant.sety(y-1);
+            chemin.add(suivant);
+        }
+        else if (C[indice(W,x,y+1)]!=0) {
+            C[indice(W,x,y+1)]=0;
+            suivant.setx(x);
+            suivant.sety(y+1);
+            chemin.add(suivant);
+        }
+        else if (C[indice(W,x-1,y)]!=0) {
+            C[indice(W,x-1,y)]=0;
+            suivant.setx(x-1);
+            suivant.sety(y);
+            chemin.add(suivant);
+        }
+        else if (C[indice(W,x+1,y)]!=0) {
+            C[indice(W,x+1,y)]=0;
+            suivant.setx(x+1);
+            suivant.sety(y);
+            chemin.add(suivant);
+        }
+        else chemin.del(999);
+        avance(C,chemin,W);
+    }
+}
+
+void init_confiance(int C[], int W){
+    frontiere chemin;
+    pixel pix_init;
+    pix_init.mouse();
+    chemin.add(pix_init);
+    avance(C,chemin,W);
+}
+
+
+
+
+
+
+//Tentative avec un tableau de pixels
+
+void avance_2(int C[],pixel chemin[],int &compteur,int W,int H,int &compteur_bis){
+    while(compteur>=0) {
+        compteur_bis+=1;
+        //cout <<compteur_bis<<endl;
+        int x=chemin[compteur].getx(),y=chemin[compteur].gety();
+        if (C[indice(W,x,y-1)]!=0) {
+            compteur+=1;
+            C[indice(W,x,y-1)]=0;
+            chemin[compteur].setx(x);
+            chemin[compteur].sety(y-1);
+        }
+        else {if(C[indice(W,x,y+1)]!=0) {
+                compteur+=1;
+                C[indice(W,x,y+1)]=0;
+                chemin[compteur].setx(x);
+                chemin[compteur].sety(y+1);
+            }
+            else {if (C[indice(W,x-1,y)]!=0) {
+                    compteur+=1;
+                    C[indice(W,x-1,y)]=0;
+                    chemin[compteur].setx(x-1);
+                    chemin[compteur].sety(y);
+                }
+                else {if (C[indice(W,x+1,y)]!=0) {
+                        compteur+=1;
+                        C[indice(W,x+1,y)]=0;
+                        chemin[compteur].setx(x+1);
+                        chemin[compteur].sety(y);
+                    }
+                    else compteur-=1;
+                }
+            }
+        }
+        //init_affichage(H,W,C);
+        avance_2(C,chemin,compteur,W,H,compteur_bis);
+    }
+}
+
+
+void init_confiance_2(int C[], int W,int H){
+    int actuel=0;
+    int compteur_bis=0;
+    pixel* chemin = new pixel[W*H];
+    chemin[0].mouse();
+    avance_2(C,chemin,actuel,W,H,compteur_bis);
+    cout<<W*H<<endl;
+    delete[] chemin;
+}
+
+
+
+
+
+
+
 
 frontiere def_frontiere(int width, int C[]){
     frontiere f;
@@ -153,7 +286,7 @@ int main() {
             C[i]=1;
         }
     frontiere f = def_frontiere(width, C);
-    init_confiance(height,width,C);
+    init_confiance_2(C,width,height);
     init_affichage(height,width,C);
     endGraphics();
     }
