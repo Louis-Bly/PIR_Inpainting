@@ -188,43 +188,39 @@ void init_confiance_(int C[], int W){
 void avance_2(int C[],pixel chemin[],int &compteur,int W,int H,int &compteur_bis){
     while(compteur>=0) {
         compteur_bis+=1;
-        //cout <<compteur_bis<<endl;
+        //cout <<compteur<<endl;
         int x=chemin[compteur].getx(),y=chemin[compteur].gety();
         if (C[indice(W,x,y-1)]!=0) {
             compteur+=1;
             C[indice(W,x,y-1)]=0;
             chemin[compteur].setx(x);
             chemin[compteur].sety(y-1);
-            cout << 1 << endl;
         }
         else {if(C[indice(W,x,y+1)]!=0) {
                 compteur+=1;
                 C[indice(W,x,y+1)]=0;
                 chemin[compteur].setx(x);
                 chemin[compteur].sety(y+1);
-                cout << 2 << endl;
             }
             else {if (C[indice(W,x-1,y)]!=0) {
                     compteur+=1;
                     C[indice(W,x-1,y)]=0;
                     chemin[compteur].setx(x-1);
                     chemin[compteur].sety(y);
-                    cout << 3 << endl;
                 }
                 else {if (C[indice(W,x+1,y)]!=0) {
                         compteur+=1;
                         C[indice(W,x+1,y)]=0;
                         chemin[compteur].setx(x+1);
                         chemin[compteur].sety(y);
-                        cout << 4 << endl;
                     }
                     else {compteur-=1;
-                        cout << 5 << endl;}
+                    }
                 }
             }
+            //init_affichage(H,W,C);
+            //avance_2(C,chemin,compteur,W,H,compteur_bis);
         }
-        //init_affichage(H,W,C);
-        //avance_2(C,chemin,compteur,W,H,compteur_bis);
     }
 }
 
@@ -327,8 +323,8 @@ int main() {
             C[i]=1;
         }
     frontiere f = def_frontiere(width, C);
-    //init_confiance_2(C,width,height);
-    init_confiance(C,width,height);
+    init_confiance_2(C,width,height);
+    //init_confiance(C,width,height);
     init_affichage(height,width,C);
     endGraphics();
     }
