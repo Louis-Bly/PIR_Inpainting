@@ -14,7 +14,7 @@ int indice(int W, int x, int y){
     return(y*W+x);
 }
 
-void ajout(frontiere f, pixel p1, pixel p2, int W, double C[]){
+void ajout(frontiere &f, pixel p1, pixel p2, int W, double C[]){
     double dy=p2.gety()-p1.gety();
     double dx=p2.getx()-p1.getx();
     double coeff_dir=dy/dx;
@@ -55,25 +55,19 @@ pixel orthogonal(pixel p){
     return(ortho);
 }
 
-/*vecteur normale(pixel p, frontiere f){
+vecteur orthogonal(vecteur p){
+    vecteur ortho(p.gety(),p.getx());
+    return(ortho);
+}
+
+vecteur normale(pixel p, frontiere f){
     pixel voisin[2];
     int nb= f.voisins(p,voisin);
-    vecteur test=(voisin[0]-voisin[1])/2;
-    cout << test.getx() << "  " << test.gety() << endl;
     if (nb==1)
         return(normalise(orthogonal((voisin[0]-p)/2)));
     else
         return(normalise(orthogonal((voisin[0]-voisin[1])/2)));
 }
-
-void test_normale(frontiere f){
-    for (int i=0; i<f.gettaille();i++){
-        vecteur n=normale(f.get(i),f);
-        cout << n.getx() << "  " << n.gety() << endl;
-        drawLine(f.get(i).getx(),f.get(i).gety(),n.getx(),n.gety(),RED);
-        click();
-    }
-}*/
 
 pixel gradient(byte R[], byte G[], byte B[], pixel p, int W, int H){
     int x=p.getx();
@@ -109,7 +103,8 @@ void priority(byte R[], byte G[], byte B[], double P[], frontiere f, double C[],
             }
         }
         c=c/(pow(N,2));
-        //P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(R,G,B,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
+        C[indice(W,f.get(i).getx(),f.get(i).gety())]=c;
+        P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(R,G,B,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
     }
 }
 
@@ -159,8 +154,8 @@ void init_affichage(int H, int W, double C[]){
     }
 }
 
-frontiere def_frontiere(int width, double C[]){
-    frontiere f;
+frontiere def_frontiere(int width, int height, double C[]){
+    frontiere f(width,height);
     pixel p0, // Premier sommet
           prec, // Sommet precedent
           actuel; // Sommet qui vient d'etre clique
@@ -203,7 +198,7 @@ int main() {
         for (int i=0;i<width*height;i++){
             C[i]=1;
         }
-    frontiere f = def_frontiere(width, C);
+    frontiere f = def_frontiere(width, height, C);
     init_confiance(C,width, height);
     init_affichage(height,width,C);
     endGraphics();

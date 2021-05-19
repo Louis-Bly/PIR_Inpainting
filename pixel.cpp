@@ -72,7 +72,7 @@ vecteur operator-(vecteur p1, vecteur p2){
     return(diff);
 }
 
-vecteur operator/(vecteur p, int k){
+vecteur operator/(vecteur p, double k){
     vecteur d(p.getx()/k,p.gety()/k);
     return (d);
 }

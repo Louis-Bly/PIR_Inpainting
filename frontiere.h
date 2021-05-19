@@ -5,7 +5,7 @@ class frontiere{
     pixel* front;
     int taille;
 public:
-    frontiere();
+    frontiere(int W, int H);
     int gettaille();
     pixel get(int i);
     bool empty();

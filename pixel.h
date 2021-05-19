@@ -35,6 +35,6 @@ public:
 
 vecteur operator+(vecteur p1, vecteur p2);
 vecteur operator-(vecteur p1, vecteur p2);
-vecteur operator/(vecteur p, int k);
+vecteur operator/(vecteur p, double k);
 double ps(vecteur p1, vecteur p2);
 vecteur normalise(vecteur p);
