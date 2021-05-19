@@ -14,7 +14,7 @@ int indice(int W, int x, int y){
     return(y*W+x);
 }
 
-void ajout(frontiere f, pixel p1, pixel p2, int W, int C[]){
+void ajout(frontiere &f, pixel p1, pixel p2, int W, int C[]){
     double dy=p2.gety()-p1.gety();
     double dx=p2.getx()-p1.getx();
     double coeff_dir=dy/dx;
@@ -47,16 +47,8 @@ void ajout(frontiere f, pixel p1, pixel p2, int W, int C[]){
         }
         x0=x0+dxx;
         f.affiche(RED);
+        //cout << f.gettaille() << endl;
     }
-}
-
-pixel normale(pixel p, frontiere f){
-    pixel voisin[2];
-    int nb= f.voisins(p,voisin);
-    if (nb==1)
-        return(normalise((voisin[0]+p)/2));
-    else
-        return(normalise((voisin[0]+voisin[1])/2));
 }
 
 pixel orthogonal(pixel p){
@@ -64,11 +56,50 @@ pixel orthogonal(pixel p){
     return(ortho);
 }
 
-pixel gradient(Img I, pixel p, int W){
-    int dx=max(I[indice(W,p.getx()+1,p.gety())]-I[indice(W,p.getx(),p.gety())],I[indice(W,p.getx(),p.gety())]-I[indice(W,p.getx()-1,p.gety())]);
+/*pixel normale(pixel p, frontiere f){
+    pixel voisin[2];
+    int nb= f.voisins(p,voisin);
+    pixel test=(voisin[0]-voisin[1])/2;
+    if (nb==1)
+        return(normalise(orthogonal((voisin[0]-p)/2)));
+    else
+        return(normalise(orthogonal((voisin[0]-voisin[1])/2)));
+}*/
+
+void test_normale(frontiere f){
+    for (int i=0; i<f.gettaille();i++){
+        pixel n=normale(f.get(i),f);
+        cout << n.getx() << "  " << n.gety() << endl;
+        drawLine(f.get(i).getx(),f.get(i).gety(),n.getx(),n.gety(),RED);
+        click();
+    }
 }
 
-void priority(Img I, int P[], frontiere f, int C[], int W){
+pixel gradient(byte R[], byte G[], byte B[], pixel p, int W, int H){
+    int x=p.getx();
+    int y=p.gety();
+    pixel grad;
+    int dx1=0, dx2=0, dy1=0, dy2=0;
+    if (x>0)
+        dx1=(R[indice(W,x,y)]-R[indice(W,x-1,y)]+G[indice(W,x,y)]-G[indice(W,x-1,y)]+B[indice(W,x,y)]-B[indice(W,x-1,y)])/3;
+    if (x<W-1)
+        dx2=(R[indice(W,x+1,y)]-R[indice(W,x,y)]+G[indice(W,x+1,y)]-G[indice(W,x,y)+B[indice(W,x+1,y)]-B[indice(W,x,y)]])/3;
+    if (abs(dx1)>=abs(dx2))
+        grad.setx(dx1);
+    else
+        grad.setx(dx2);
+    if (y>0)
+        dy1=(R[indice(W,x,y)]-R[indice(W,x,y-1)]+G[indice(W,x,y)]-G[indice(W,x,y-1)]+B[indice(W,x,y)]-B[indice(W,x,y-1)])/3;
+    if (y<H-1)
+        dy2=(R[indice(W,x,y+1)]-R[indice(W,x,y)]+G[indice(W,x,y+1)]-G[indice(W,x,y)+B[indice(W,x,y+1)]-B[indice(W,x,y)]])/3;
+    if (abs(dy1)>=abs(dy2))
+        grad.sety(dy1);
+    else
+        grad.sety(dy2);
+    return(grad);
+}
+
+void priority(byte R[], byte G[], byte B[], int P[], frontiere f, int C[], int W,int H){
     for (int i=0; i<f.gettaille(); i++){
         int c=0;
         for (int j=-N/2; j<=N/2; j++){
@@ -78,7 +109,7 @@ void priority(Img I, int P[], frontiere f, int C[], int W){
             }
         }
         c=c/(pow(N,2));
-        P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(I, f.get(i),W)),normale(f.get(i),f)))/alpha;
+        P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(R,G,B,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
     }
 }
 
@@ -175,6 +206,8 @@ int main() {
     frontiere f = def_frontiere(width, C);
     init_confiance(C,width, height);
     init_affichage(height,width,C);
+    //cout << f.gettaille() << endl;
+    test_normale(f);
     endGraphics();
     }
     return 0;

@@ -39,20 +39,48 @@ int pixel::mouse(){
     return(getMouse(x,y));
 }
 
-pixel operator+(pixel p1, pixel p2){
+vecteur::vecteur(){
+    x=0;
+    y=0;
+}
+
+vecteur::vecteur(double x0, double y0){
+    x=x0;
+    y=y0;
+}
+
+vecteur::vecteur(pixel p){
+    x=p.getx();
+    y=p.gety();
+}
+
+double vecteur::getx(){
+    return(x);
+}
+
+double vecteur::gety(){
+    return(y);
+}
+
+vecteur operator+(vecteur p1, vecteur p2){
     pixel somme(p1.getx()+p2.getx(),p1.gety()+p2.gety());
     return(somme);
 }
 
-pixel operator/(pixel p, int k){
-    pixel d(p.getx()/k,p.gety()/k);
+vecteur operator-(vecteur p1, vecteur p2){
+    vecteur diff(p1.getx()-p2.getx(),p1.gety()-p2.gety());
+    return(diff);
+}
+
+vecteur operator/(vecteur p, int k){
+    vecteur d(p.getx()/k,p.gety()/k);
     return (d);
 }
 
-int ps(pixel p1, pixel p2){
+double ps(vecteur p1, vecteur p2){
     return(p1.getx()*p2.getx()+p1.gety()*p2.gety());
 }
 
-pixel normalise(pixel p){
+vecteur normalise(vecteur p){
     return(p/sqrt(ps(p,p)));
 }
