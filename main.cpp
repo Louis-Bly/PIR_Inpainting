@@ -189,7 +189,7 @@ frontiere def_frontiere(int width, int height, double C[]){
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
-    if (load(img,srcPath("Image_Couleur_Test.jpg"))){ // Stop si l'image n'est pas chargee
+    if (loadColorImage(img,srcPath("Image_Couleur_Test.jpg"))){ // Stop si l'image n'est pas chargee
         int width=img.width();
         int height=img.height();
         openWindow(width, height);
