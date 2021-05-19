@@ -14,7 +14,7 @@ int indice(int W, int x, int y){
     return(y*W+x);
 }
 
-void ajout(frontiere f, pixel p1, pixel p2, int W, int C[]){
+void ajout(frontiere f, pixel p1, pixel p2, int W, double C[]){
     double dy=p2.gety()-p1.gety();
     double dx=p2.getx()-p1.getx();
     double coeff_dir=dy/dx;
@@ -99,7 +99,7 @@ pixel gradient(byte R[], byte G[], byte B[], pixel p, int W, int H){
     return(grad);
 }
 
-void priority(byte R[], byte G[], byte B[], int P[], frontiere f, int C[], int W,int H){
+void priority(byte R[], byte G[], byte B[], double P[], frontiere f, double C[], int W,int H){
     for (int i=0; i<f.gettaille(); i++){
         int c=0;
         for (int j=-N/2; j<=N/2; j++){
@@ -113,7 +113,7 @@ void priority(byte R[], byte G[], byte B[], int P[], frontiere f, int C[], int W
     }
 }
 
-void init_confiance(int C[], int W, int H){
+void init_confiance(double C[], int W, int H){
     pixel* chemin= new pixel[W*H];
     chemin[0].mouse();
     int compteur=1;
@@ -150,7 +150,7 @@ void init_confiance(int C[], int W, int H){
 }
 
 
-void init_affichage(int H, int W, int C[]){
+void init_affichage(int H, int W, double C[]){
     for (int y=0;y<H;y++){
         for (int x=0;x<W;x++){
             if (C[indice(W,x,y)]==0)
@@ -159,7 +159,7 @@ void init_affichage(int H, int W, int C[]){
     }
 }
 
-frontiere def_frontiere(int width, int C[]){
+frontiere def_frontiere(int width, double C[]){
     frontiere f;
     pixel p0, // Premier sommet
           prec, // Sommet precedent
@@ -191,23 +191,6 @@ frontiere def_frontiere(int width, int C[]){
     return f;
 }
 
-void init_confiance(int H, int W, int C[]){
-    int dedans;
-    for (int i=0;i<H;i++) {
-        dedans = 0;
-        for (int j=0;j<W;j++){
-            if (dedans==1){
-                if (C[indice(W,i,j)]==1) dedans = 0;
-                else C[indice(W,i,j)]=1;
-            }
-            else {
-                if (C[indice(W,i,j)]==1) dedans = 1;
-                else C[indice(W,i,j)]=0;
-            }
-        }
-    }
-}
-
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
@@ -216,7 +199,7 @@ int main() {
         int height=img.height();
         openWindow(width, height);
         display(img);
-        int* C= new int[width*height];
+        double* C= new double[width*height];
         for (int i=0;i<width*height;i++){
             C[i]=1;
         }
