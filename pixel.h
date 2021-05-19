@@ -6,7 +6,6 @@
 using namespace Imagine;
 using namespace std;
 
-int const N=9;
 int const alpha=255;
 
 class pixel{

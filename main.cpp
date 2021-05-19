@@ -4,6 +4,7 @@
 #include <Imagine/Graphics.h>
 #include <iostream>
 #include "frontiere.h"
+#include "patch.h"
 
 using namespace Imagine;
 using namespace std;
