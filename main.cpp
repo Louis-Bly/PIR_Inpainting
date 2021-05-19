@@ -82,23 +82,42 @@ void priority(Img I, int P[], frontiere f, int C[], int W){
     }
 }
 
-void init_confiance(int H, int W, int C[]){
-    int dedans;
-    for (int y=0;y<H;y++) {
-        dedans = 0;
-        for (int x=0;x<W;x++){
-            cout << dedans << endl;
-            if (dedans==1){
-                if (C[indice(W,x,y)]==0) dedans = 0;
-                else C[indice(W,x,y)]=0;
-            }
-            else {
-                if (C[indice(W,x,y)]==0) dedans = 1;
-                else C[indice(W,x,y)]=1;
-            }
+void init_confiance(int C[], int W, int H){
+    pixel* chemin= new pixel[W*H];
+    chemin[0].mouse();
+    int compteur=1;
+    int boucle=0;
+    while (compteur>boucle && compteur<W*H){
+        int x=chemin[boucle].getx();
+        int y=chemin[boucle].gety();
+        if (x>0 && C[indice(W,x-1,y)]!=0){
+            C[indice(W,x-1,y)]=0;
+            chemin[compteur].setx(x-1);
+            chemin[compteur].sety(y);
+            compteur+=1;
         }
+        if (x<W-1 && C[indice(W,x+1,y)]!=0){
+            C[indice(W,x+1,y)]=0;
+            chemin[compteur].setx(x+1);
+            chemin[compteur].sety(y);
+            compteur+=1;
+        }
+        if (y>0 && C[indice(W,x,y-1)]!=0){
+            C[indice(W,x,y-1)]=0;
+            chemin[compteur].setx(x);
+            chemin[compteur].sety(y-1);
+            compteur+=1;
+        }
+        if (y<H-1 && C[indice(W,x,y+1)]!=0){
+            C[indice(W,x,y+1)]=0;
+            chemin[compteur].setx(x);
+            chemin[compteur].sety(y+1);
+            compteur+=1;
+        }
+        boucle+=1;
     }
 }
+
 
 void init_affichage(int H, int W, int C[]){
     for (int y=0;y<H;y++){
@@ -133,7 +152,7 @@ frontiere def_frontiere(int width, int C[]){
         // Fermeture du polygone si le clic est droit
         if (i==3){
             // Trace du segment reliant le premier sommet et le sommet qui vient d'etre clique
-            ajout(f,p0,actuel,width,C);
+            ajout(f,actuel,p0,width,C);
             f.affiche(RED);
             //drawLine(p0.getx(),p0.gety(),actuel.getx(),actuel.gety(),RED);
         }
@@ -154,7 +173,7 @@ int main() {
             C[i]=1;
         }
     frontiere f = def_frontiere(width, C);
-    init_confiance(height,width,C);
+    init_confiance(C,width, height);
     init_affichage(height,width,C);
     endGraphics();
     }
