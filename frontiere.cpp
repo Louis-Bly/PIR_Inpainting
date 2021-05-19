@@ -1,4 +1,5 @@
 #include "frontiere.h"
+#include "patch.h"
 
 frontiere::frontiere(){
     front = new pixel[1000];
