@@ -8,7 +8,7 @@
 using namespace Imagine;
 using namespace std;
 
-typedef Image<byte> Img;
+typedef Image<Color> Img;
 
 int indice(int W, int x, int y){
     return(y*W+x);
@@ -64,7 +64,7 @@ pixel orthogonal(pixel p){
     return(ortho);
 }
 
-pixel gradient(Img I, pixel p, int W){
+/* pixel gradient(Img I, pixel p, int W){
     int dx=max(I[indice(W,p.getx()+1,p.gety())]-I[indice(W,p.getx(),p.gety())],I[indice(W,p.getx(),p.gety())]-I[indice(W,p.getx()-1,p.gety())]);
 }
 
@@ -80,7 +80,7 @@ void priority(Img I, int P[], frontiere f, int C[], int W){
         c=c/(pow(N,2));
         P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(I, f.get(i),W)),normale(f.get(i),f)))/alpha;
     }
-}
+} */
 
 void init_confiance(int C[], int W, int H){
     pixel* chemin= new pixel[W*H];
@@ -180,7 +180,7 @@ void init_confiance(int H, int W, int C[]){
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
-    if (load(img,srcPath("lena.png"))){ // Stop si l'image n'est pas chargee
+    if (load(img,srcPath("Image_Couleur_Test.jpg"))){ // Stop si l'image n'est pas chargee
         int width=img.width();
         int height=img.height();
         openWindow(width, height);
