@@ -8,7 +8,7 @@
 using namespace Imagine;
 using namespace std;
 
-typedef Image<byte> Img;
+typedef Image<Color> Img;
 
 int indice(int W, int x, int y){
     return(y*W+x);
@@ -69,23 +69,30 @@ vecteur normale(pixel p, frontiere f){
         return(normalise(orthogonal((voisin[0]-voisin[1])/2)));
 }
 
-pixel gradient(byte R[], byte G[], byte B[], pixel p, int W, int H){
+double diff(Img img,int x1, int y1, int x2, int y2){
+    int d=0;
+    for (int k=0;k<2;k++)
+        d+=img(x1,y1)[k]-img(x2,y2)[k];
+    return(d/3);
+}
+
+vecteur gradient(Img img, pixel p, int W, int H){
     int x=p.getx();
     int y=p.gety();
-    pixel grad;
-    int dx1=0, dx2=0, dy1=0, dy2=0;
+    vecteur grad;
+    double dx1=0, dx2=0, dy1=0, dy2=0;
     if (x>0)
-        dx1=(R[indice(W,x,y)]-R[indice(W,x-1,y)]+G[indice(W,x,y)]-G[indice(W,x-1,y)]+B[indice(W,x,y)]-B[indice(W,x-1,y)])/3;
+        dx1=diff(img,x,y,x-1,y);
     if (x<W-1)
-        dx2=(R[indice(W,x+1,y)]-R[indice(W,x,y)]+G[indice(W,x+1,y)]-G[indice(W,x,y)+B[indice(W,x+1,y)]-B[indice(W,x,y)]])/3;
+        dx2=diff(img,x+1,y,x,y);
     if (abs(dx1)>=abs(dx2))
         grad.setx(dx1);
     else
         grad.setx(dx2);
     if (y>0)
-        dy1=(R[indice(W,x,y)]-R[indice(W,x,y-1)]+G[indice(W,x,y)]-G[indice(W,x,y-1)]+B[indice(W,x,y)]-B[indice(W,x,y-1)])/3;
+        dy1=diff(img,x,y,x,y-1);
     if (y<H-1)
-        dy2=(R[indice(W,x,y+1)]-R[indice(W,x,y)]+G[indice(W,x,y+1)]-G[indice(W,x,y)+B[indice(W,x,y+1)]-B[indice(W,x,y)]])/3;
+        dy2=diff(img,x,y+1,x,y);
     if (abs(dy1)>=abs(dy2))
         grad.sety(dy1);
     else
@@ -93,19 +100,35 @@ pixel gradient(byte R[], byte G[], byte B[], pixel p, int W, int H){
     return(grad);
 }
 
-void priority(byte R[], byte G[], byte B[], double P[], frontiere f, double C[], int W,int H){
+void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int W,int H){
     for (int i=0; i<f.gettaille(); i++){
-        int c=0;
+        C_temp[i]=0;
+        int compteur=0;
         for (int j=-N/2; j<=N/2; j++){
             for (int k=-N/2; k<=N/2; k++){
-                pixel q((f.get(i)).getx()+j,(f.get(i)).gety()+k);
-                c=c+C[q.indice(W)];
+                C_temp[i]+=C[indice(W,f.get(i).getx()+j,f.get(i).gety()+k)];
+                compteur+=1;
             }
         }
-        c=c/(pow(N,2));
-        C[indice(W,f.get(i).getx(),f.get(i).gety())]=c;
-        P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(R,G,B,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
+        C_temp[i]=C_temp[i]/compteur;
+        P[i]=C_temp[i]+abs(ps(orthogonal(gradient(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
     }
+}
+
+pixel max_priorite(Img img, frontiere f, double C[], int W, int H, double &confiance){
+    double* P= new double[f.gettaille()];
+    double* C_temp= new double[f.gettaille()];
+    priority(img,P,C_temp,f,C,W,H);
+    int indice_max=0;
+    double maxi=P[0];
+    for (int i=1;i<f.gettaille(); i++){
+        if (P[i]>maxi){
+            indice_max=i;
+            maxi=P[i];
+        }
+    }
+    confiance=C[indice_max];
+    return(f.get(indice_max));
 }
 
 void init_confiance(double C[], int W, int H){
@@ -189,7 +212,7 @@ frontiere def_frontiere(int width, int height, double C[]){
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
-    if (loadColorImage(img,srcPath("Image_Couleur_Test.jpg"))){ // Stop si l'image n'est pas chargee
+    if (load(img,srcPath("Image_Couleur_Test.jpg"))){ // Stop si l'image n'est pas chargee
         int width=img.width();
         int height=img.height();
         openWindow(width, height);
@@ -199,8 +222,11 @@ int main() {
             C[i]=1;
         }
     frontiere f = def_frontiere(width, height, C);
+    double confiance;
     init_confiance(C,width, height);
     init_affichage(height,width,C);
+    pixel p=max_priorite(img,f,C,width,height,confiance);
+    fillRect(p.getx(),p.gety(),1,1,RED);
     endGraphics();
     }
     return 0;

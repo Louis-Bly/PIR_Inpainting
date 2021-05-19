@@ -62,6 +62,14 @@ double vecteur::gety(){
     return(y);
 }
 
+void vecteur::setx(double x0){
+    x=x0;
+}
+
+void vecteur::sety(double y0){
+    y=y0;
+}
+
 vecteur operator+(vecteur p1, vecteur p2){
     pixel somme(p1.getx()+p2.getx(),p1.gety()+p2.gety());
     return(somme);

@@ -31,6 +31,8 @@ public:
     vecteur(pixel p);
     double getx();
     double gety();
+    void setx(double x0);
+    void sety(double y0);
 };
 
 vecteur operator+(vecteur p1, vecteur p2);
