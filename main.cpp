@@ -15,7 +15,7 @@ int indice(int W, int x, int y){
     return(y*W+x);
 }
 
-void ajout(frontiere f, pixel p1, pixel p2, int W, int C[]){
+void ajout(frontiere &f, pixel p1, pixel p2, int W, double C[]){
     double dy=p2.gety()-p1.gety();
     double dx=p2.getx()-p1.getx();
     double coeff_dir=dy/dx;
@@ -51,39 +51,88 @@ void ajout(frontiere f, pixel p1, pixel p2, int W, int C[]){
     }
 }
 
-pixel normale(pixel p, frontiere f){
-    pixel voisin[2];
-    int nb= f.voisins(p,voisin);
-    if (nb==1)
-        return(normalise((voisin[0]+p)/2));
-    else
-        return(normalise((voisin[0]+voisin[1])/2));
-}
-
 pixel orthogonal(pixel p){
     pixel ortho(p.gety(),p.getx());
     return(ortho);
 }
 
-/* pixel gradient(Img I, pixel p, int W){
-    int dx=max(I[indice(W,p.getx()+1,p.gety())]-I[indice(W,p.getx(),p.gety())],I[indice(W,p.getx(),p.gety())]-I[indice(W,p.getx()-1,p.gety())]);
+vecteur orthogonal(vecteur p){
+    vecteur ortho(p.gety(),p.getx());
+    return(ortho);
 }
 
-void priority(Img I, int P[], frontiere f, int C[], int W){
+vecteur normale(pixel p, frontiere f){
+    pixel voisin[2];
+    int nb= f.voisins(p,voisin);
+    if (nb==1)
+        return(normalise(orthogonal((voisin[0]-p)/2)));
+    else
+        return(normalise(orthogonal((voisin[0]-voisin[1])/2)));
+}
+
+double diff(Img img,int x1, int y1, int x2, int y2){
+    int d=0;
+    for (int k=0;k<2;k++)
+        d+=img(x1,y1)[k]-img(x2,y2)[k];
+    return(d/3);
+}
+
+vecteur gradient(Img img, pixel p, int W, int H){
+    int x=p.getx();
+    int y=p.gety();
+    vecteur grad;
+    double dx1=0, dx2=0, dy1=0, dy2=0;
+    if (x>0)
+        dx1=diff(img,x,y,x-1,y);
+    if (x<W-1)
+        dx2=diff(img,x+1,y,x,y);
+    if (abs(dx1)>=abs(dx2))
+        grad.setx(dx1);
+    else
+        grad.setx(dx2);
+    if (y>0)
+        dy1=diff(img,x,y,x,y-1);
+    if (y<H-1)
+        dy2=diff(img,x,y+1,x,y);
+    if (abs(dy1)>=abs(dy2))
+        grad.sety(dy1);
+    else
+        grad.sety(dy2);
+    return(grad);
+}
+
+void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int W,int H){
     for (int i=0; i<f.gettaille(); i++){
-        int c=0;
+        C_temp[i]=0;
+        int compteur=0;
         for (int j=-N/2; j<=N/2; j++){
             for (int k=-N/2; k<=N/2; k++){
-                pixel q((f.get(i)).getx()+j,(f.get(i)).gety()+k);
-                c=c+C[q.indice(W)];
+                C_temp[i]+=C[indice(W,f.get(i).getx()+j,f.get(i).gety()+k)];
+                compteur+=1;
             }
         }
-        c=c/(pow(N,2));
-        P[(f.get(i)).indice(W)]=c+abs(ps(orthogonal(gradient(I, f.get(i),W)),normale(f.get(i),f)))/alpha;
+        C_temp[i]=C_temp[i]/compteur;
+        P[i]=C_temp[i]+abs(ps(orthogonal(gradient(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
     }
-} */
+}
 
-void init_confiance(int C[], int W, int H){
+pixel max_priorite(Img img, frontiere f, double C[], int W, int H, double &confiance){
+    double* P= new double[f.gettaille()];
+    double* C_temp= new double[f.gettaille()];
+    priority(img,P,C_temp,f,C,W,H);
+    int indice_max=0;
+    double maxi=P[0];
+    for (int i=1;i<f.gettaille(); i++){
+        if (P[i]>maxi){
+            indice_max=i;
+            maxi=P[i];
+        }
+    }
+    confiance=C[indice_max];
+    return(f.get(indice_max));
+}
+
+void init_confiance(double C[], int W, int H){
     pixel* chemin= new pixel[W*H];
     chemin[0].mouse();
     int compteur=1;
@@ -120,7 +169,7 @@ void init_confiance(int C[], int W, int H){
 }
 
 
-void init_affichage(int H, int W, int C[]){
+void init_affichage(int H, int W, double C[]){
     for (int y=0;y<H;y++){
         for (int x=0;x<W;x++){
             if (C[indice(W,x,y)]==0)
@@ -129,8 +178,8 @@ void init_affichage(int H, int W, int C[]){
     }
 }
 
-frontiere def_frontiere(int width, int C[]){
-    frontiere f;
+frontiere def_frontiere(int width, int height, double C[]){
+    frontiere f(width,height);
     pixel p0, // Premier sommet
           prec, // Sommet precedent
           actuel; // Sommet qui vient d'etre clique
@@ -161,23 +210,6 @@ frontiere def_frontiere(int width, int C[]){
     return f;
 }
 
-void init_confiance(int H, int W, int C[]){
-    int dedans;
-    for (int i=0;i<H;i++) {
-        dedans = 0;
-        for (int j=0;j<W;j++){
-            if (dedans==1){
-                if (C[indice(W,i,j)]==1) dedans = 0;
-                else C[indice(W,i,j)]=1;
-            }
-            else {
-                if (C[indice(W,i,j)]==1) dedans = 1;
-                else C[indice(W,i,j)]=0;
-            }
-        }
-    }
-}
-
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
@@ -186,13 +218,16 @@ int main() {
         int height=img.height();
         openWindow(width, height);
         display(img);
-        int* C= new int[width*height];
+        double* C= new double[width*height];
         for (int i=0;i<width*height;i++){
             C[i]=1;
         }
-    frontiere f = def_frontiere(width, C);
+    frontiere f = def_frontiere(width, height, C);
+    double confiance;
     init_confiance(C,width, height);
     init_affichage(height,width,C);
+    pixel p=max_priorite(img,f,C,width,height,confiance);
+    fillRect(p.getx(),p.gety(),1,1,RED);
     endGraphics();
     }
     return 0;

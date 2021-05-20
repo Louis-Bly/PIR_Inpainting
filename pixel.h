@@ -22,7 +22,20 @@ public:
     int mouse();
 };
 
-pixel operator+(pixel p1, pixel p2);
-pixel operator/(pixel p, int k);
-int ps(pixel p1, pixel p2);
-pixel normalise(pixel p);
+class vecteur{
+    double x,y;
+public:
+    vecteur();
+    vecteur(double x0, double y0);
+    vecteur(pixel p);
+    double getx();
+    double gety();
+    void setx(double x0);
+    void sety(double y0);
+};
+
+vecteur operator+(vecteur p1, vecteur p2);
+vecteur operator-(vecteur p1, vecteur p2);
+vecteur operator/(vecteur p, double k);
+double ps(vecteur p1, vecteur p2);
+vecteur normalise(vecteur p);
