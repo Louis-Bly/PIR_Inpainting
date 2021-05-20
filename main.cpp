@@ -169,11 +169,12 @@ void init_confiance(double C[], int W, int H){
 }
 
 
-void init_affichage(int H, int W, double C[]){
+void init_affichage(Img img,int H, int W, double C[]){
     for (int y=0;y<H;y++){
         for (int x=0;x<W;x++){
             if (C[indice(W,x,y)]==0)
-                fillRect(x,y,1,1,WHITE);
+                for (int k=0;k<3;k++)
+                    img(x,y)[k]=255;
         }
     }
 }
@@ -225,7 +226,7 @@ int main() {
     frontiere f = def_frontiere(width, height, C);
     double newC;
     init_confiance(C,width, height);
-    init_affichage(height,width,C);
+    init_affichage(img,height,width,C);
     while(f.gettaille() > 0){
         pixel p=max_priorite(img,f,C,width,height,newC);
         patch remp = remplacant(p,C,width,height,img);

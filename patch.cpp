@@ -112,7 +112,7 @@ patch remplacant(pixel pix, double C[], int W, int H, Img img){
 
 
 
-void colle(patch pat, pixel pi, Img img, double* C, float newC, frontiere front){
+void colle(patch pat, pixel pi, Img img, double* C, float newC, frontiere &front){
     int x = pi.getx();
     int y = pi.gety();
     int W = img.width();

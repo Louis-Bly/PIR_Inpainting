@@ -25,5 +25,5 @@ public:
     void couleur(int i, int j, int* col);
 };
 
-void colle(patch pat, pixel pi, Img img, double* C, float newC, frontiere front);
+void colle(patch pat, pixel pi, Img img, double* C, float newC, frontiere &front);
 patch remplacant(pixel pix, double C[], int W, int H, Img img);  // Renvoie le meilleur patch associe au patch centre en p
