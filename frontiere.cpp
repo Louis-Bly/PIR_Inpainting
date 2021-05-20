@@ -43,7 +43,7 @@ int frontiere::voisins(pixel p, pixel voisin[]){
 void frontiere::del_patch(pixel p){
     int k=0;
     while(k<taille){
-        if ((abs(front[k].getx()-p.getx()))<N/2 && (abs(front[k].gety()-p.gety()))<N/2)
+        if ((abs(front[k].getx()-p.getx()))<1+(N/2) && (abs(front[k].gety()-p.gety()))<1+(N/2))
             del(k);
         else
             k++;

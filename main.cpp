@@ -223,11 +223,18 @@ int main() {
             C[i]=1;
         }
     frontiere f = def_frontiere(width, height, C);
-    double confiance;
+    double newC;
     init_confiance(C,width, height);
     init_affichage(height,width,C);
-    pixel p=max_priorite(img,f,C,width,height,confiance);
-    fillRect(p.getx(),p.gety(),1,1,RED);
+    while(f.gettaille() > 0){
+        pixel p=max_priorite(img,f,C,width,height,newC);
+        patch remp = remplacant(p,C,width,height,img);
+        colle(remp,p,img,C,newC,f);
+        cout << f.gettaille() << endl;
+        display(img);
+    }
+    display(img);
+    click();
     endGraphics();
     }
     return 0;

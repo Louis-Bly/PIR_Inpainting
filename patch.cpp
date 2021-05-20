@@ -48,7 +48,7 @@ int patch::gety(){
 
 
 
-bool patch::inclu(int C[], int W){
+bool patch::inclu(double C[], int W){
     int x = p.getx();
     int y = p.gety();
     for (int i=0; i < N; i++){
@@ -63,7 +63,7 @@ bool patch::inclu(int C[], int W){
 
 
 
-float patch::distance(patch pat, int C[], int W){
+float patch::distance(patch pat, double C[], int W){
     int i=p.getx();
     int j=p.gety();
     float dist = 0;
@@ -82,7 +82,7 @@ float patch::distance(patch pat, int C[], int W){
 
 
 
-patch remplacant(pixel pix, int C[], int W, int H, Img img){
+patch remplacant(pixel pix, double C[], int W, int H, Img img){
 
     pixel pixel_fin;        // pixel central du patch a renvoyer
     float somme = 0;
@@ -112,7 +112,7 @@ patch remplacant(pixel pix, int C[], int W, int H, Img img){
 
 
 
-void colle(patch pat, pixel pi, Img img, int* C, float newC, frontiere front){
+void colle(patch pat, pixel pi, Img img, double* C, float newC, frontiere front){
     int x = pi.getx();
     int y = pi.gety();
     int W = img.width();
@@ -128,10 +128,7 @@ void colle(patch pat, pixel pi, Img img, int* C, float newC, frontiere front){
             }
         }
     }
-    front.del_patch(pixel(pi.getx()-1,pi.gety()-1));
-    front.del_patch(pixel(pi.getx()-1,pi.gety()+1));
-    front.del_patch(pixel(pi.getx()+1,pi.gety()+1));
-    front.del_patch(pixel(pi.getx()+1,pi.gety()-1));
+    front.del_patch(pixel(pi.getx(),pi.gety()));
     for(int i=0;i<N+2;i++){
         for(int j=0;j<N+2;j++){
             if(C[int(x+i-floor(N/2)-1+W*(y+j-floor(N/2)-1))] == 0){
