@@ -231,7 +231,6 @@ int main() {
         pixel p=max_priorite(img,f,C,width,height,newC);
         patch remp = remplacant(p,C,width,height,img);
         colle(remp,p,img,C,newC,f);
-        cout << f.gettaille() << endl;
         display(img);
     }
     display(img);

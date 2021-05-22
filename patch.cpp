@@ -27,7 +27,7 @@ patch::patch(int x, int y, Img img){
 
 void patch::couleur(int i, int j, int* col){
     for(int k=0; k<3; k++){
-        col[k] = colors[i+N*j][k];
+        col[k] = colors[int(i+floor(N/2)+N*(j+floor(N/2)))][k];
     }
 }
 
@@ -117,22 +117,22 @@ void colle(patch pat, pixel pi, Img img, double* C, float newC, frontiere &front
     int y = pi.gety();
     int W = img.width();
     int col[3] = {0,0,0};
-    for(int i=0;i<N;i++){
-        for(int j=0;j<N;j++){
-            if(C[int(x+i-floor(N/2)+W*(y+j-floor(N/2)))] == 0){
+    for(int i=-floor(N/2);i<floor(N/2);i++){
+        for(int j=-floor(N/2);j<floor(N/2);j++){
+            if(C[int(x+i+W*(y+j))] == 0){
                 pat.couleur(i,j,col);
                 for(int k=0;k<3;k++){
-                    img(x+i-floor(N/2),y+j-floor(N/2))[k] = col[k]; //On colorie la nouvelle zone
+                    img(x+i,y+j)[k] = col[k]; //On colorie la nouvelle zone
                 }
-                C[int(x+i-floor(N/2)+W*(y+j-floor(N/2)))] = newC; //On actualise la confiance
+                C[int(x+i+W*(y+j))] = newC; //On actualise la confiance
             }
         }
     }
     front.del_patch(pixel(pi.getx(),pi.gety()));
-    for(int i=0;i<N+2;i++){
-        for(int j=0;j<N+2;j++){
-            if(C[int(x+i-floor(N/2)-1+W*(y+j-floor(N/2)-1))] == 0){
-                front.add(pixel(x+i-floor(N/2)-1,y+j-floor(N/2)-1)); //On renouvelle la frontière
+    for(int i=-ceil(N/2);i<ceil(N/2)+1;i++){
+        for(int j=-ceil(N/2);j<ceil(N/2)+1;j++){
+            if(C[int(x+i+W*(y+j))] == 0){
+                front.add(pixel(x+i,y+j)); //On renouvelle la frontière
             }
         }
     }
