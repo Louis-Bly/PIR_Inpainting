@@ -102,33 +102,50 @@ vecteur gradient(Img img, pixel p, int W, int H){
 }
 
 void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int W,int H){
+    cout << 1 <<"   "<< 2 <<"   "<< 1 << endl;
+    int compteur;
+    int compteur_bis;
     for (int i=0; i<f.gettaille(); i++){
+        cout <<"re la lose"<< endl;
+        compteur_bis=0;
+        cout << 1 <<"   "<< 2 <<"   "<< 1 <<"   "<< 1 <<"   "<< i <<"   "<< f.gettaille() <<"   "<< C_temp[i] << endl;
         C_temp[i]=0;
-        int compteur=0;
+        cout <<"la lose"<< endl;
+        compteur=0;
+        cout << 1 <<"   "<< 2 <<"   "<< 1 <<"   "<< 2 <<endl;
         for (int j=-N/2; j<=N/2; j++){
             for (int k=-N/2; k<=N/2; k++){
                 C_temp[i]+=C[indice(W,f.get(i).getx()+j,f.get(i).gety()+k)];
                 compteur+=1;
             }
         }
+        cout << 1 <<"   "<< 2 <<"   "<< 1 <<"   "<< 3 <<endl;
         C_temp[i]=C_temp[i]/compteur;
-        P[i]=C_temp[i]+abs(ps(orthogonal(gradient(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
+        P[i]=C_temp[i]*abs(ps(orthogonal(gradient(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
+        cout << 1 <<"   "<< 2 <<"   "<< 1 <<"   "<< 4 <<endl;
     }
+    cout << 1 <<"   "<< 2 <<"   "<< 2 <<endl;
 }
 
 pixel max_priorite(Img img, frontiere f, double C[], int W, int H, double &confiance){
+    cout << 1 <<"   "<< 1 << endl;
     double* P= new double[f.gettaille()];
     double* C_temp= new double[f.gettaille()];
+    cout << 1 <<"   "<< 2 << endl;
     priority(img,P,C_temp,f,C,W,H);
     int indice_max=0;
     double maxi=P[0];
+    cout << 1 <<"   "<< 3 << endl;
     for (int i=1;i<f.gettaille(); i++){
         if (P[i]>maxi){
             indice_max=i;
             maxi=P[i];
         }
     }
+    cout << 1 <<"   "<< 4 << endl;
     confiance=C[indice_max];
+    delete [] P;
+    delete [] C_temp;
     return(f.get(indice_max));
 }
 
@@ -229,10 +246,13 @@ int main() {
     init_affichage(img,height,width,C);
     while(f.gettaille() > 0){
         pixel p=max_priorite(img,f,C,width,height,newC);
+        cout << 1 << endl;
         patch remp = remplacant(p,C,width,height,img);
+        cout << 2 << endl;
         colle(remp,p,img,C,newC,f);
         cout << f.gettaille() << endl;
         display(img);
+        cout << 3 << endl;
     }
     display(img);
     click();
