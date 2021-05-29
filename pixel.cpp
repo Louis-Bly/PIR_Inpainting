@@ -89,6 +89,10 @@ double ps(vecteur p1, vecteur p2){
     return(p1.getx()*p2.getx()+p1.gety()*p2.gety());
 }
 
+double norme(vecteur p){
+    return(ps(p,p));
+}
+
 vecteur normalise(vecteur p){
-    return(p/sqrt(ps(p,p)));
+    return(p/sqrt(norme(p)));
 }

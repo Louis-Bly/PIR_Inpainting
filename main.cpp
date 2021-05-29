@@ -77,9 +77,7 @@ double diff(Img img,int x1, int y1, int x2, int y2){
     return(d/3);
 }
 
-vecteur gradient(Img img, pixel p, int W, int H){
-    int x=p.getx();
-    int y=p.gety();
+vecteur gradient(Img img, int x, int y, int W, int H){
     vecteur grad;
     double dx1=0, dx2=0, dy1=0, dy2=0;
     if (x>0)
@@ -101,6 +99,23 @@ vecteur gradient(Img img, pixel p, int W, int H){
     return(grad);
 }
 
+vecteur gradient_patch(Img img, pixel p, int W, int H){
+    int x=p.getx();
+    int y=p.gety();
+    double norme2_max=0;
+    vecteur grad_max;
+    for (int j=-N/2; j<=N/2; j++){
+        for (int k=-N/2; k<=N/2; k++){
+            vecteur grad=gradient(img,x+j,y+k,W,H);
+            if (norme(grad)>=norme2_max){
+                grad_max.setx(grad.getx());
+                grad_max.sety(grad.gety());
+            }
+        }
+    }
+    return(grad_max);
+}
+
 void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int W,int H){
     for (int i=0; i<f.gettaille(); i++){
         C_temp[i]=0;
@@ -112,7 +127,7 @@ void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int
             }
         }
         C_temp[i]=C_temp[i]/compteur;
-        P[i]=C_temp[i]*abs(ps(orthogonal(gradient(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
+        P[i]=C_temp[i]*abs(ps(orthogonal(gradient_patch(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
     }
 }
 

@@ -38,4 +38,5 @@ vecteur operator+(vecteur p1, vecteur p2);
 vecteur operator-(vecteur p1, vecteur p2);
 vecteur operator/(vecteur p, double k);
 double ps(vecteur p1, vecteur p2);
+double norme(vecteur p);
 vecteur normalise(vecteur p);
