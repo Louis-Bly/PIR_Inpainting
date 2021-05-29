@@ -112,7 +112,7 @@ void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int
             }
         }
         C_temp[i]=C_temp[i]/compteur;
-        P[i]=C_temp[i]+abs(ps(orthogonal(gradient(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
+        P[i]=C_temp[i]*abs(ps(orthogonal(gradient(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
     }
 }
 
