@@ -230,7 +230,7 @@ frontiere def_frontiere(int width, int height, double C[]){
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
-    if (load(img,srcPath("plage.jpg"))){ // Stop si l'image n'est pas chargee
+    if (load(img,srcPath("plage"))){ // Stop si l'image n'est pas chargee
         int width=img.width();
         int height=img.height();
         openWindow(width, height);
@@ -238,23 +238,30 @@ int main() {
         frontiere f(width,height);
         //for (int k=0;k<10;k++){
         while(true){
-        double* C= new double[width*height];
-        for (int i=0;i<width*height;i++){
-            C[i]=1;
-        }
-        f = def_frontiere(width, height, C);
-        double newC;
-        init_confiance(C,width, height);
-        init_affichage(img,height,width,C);
-        click();
-        while(f.gettaille() > 0){
-            pixel p=max_priorite(img,f,C,width,height,newC);
-            patch remp = remplacant(p,C,width,height,img);
-            colle(remp,p,img,C,newC,f);
+            double* C= new double[width*height];
+            for (int i=0;i<width*height;i++){
+                C[i]=1;
+            }
+            f = def_frontiere(width, height, C);
+            double newC;
+            init_confiance(C,width, height);
+            init_affichage(img,height,width,C);
+            click();
+            int taille_init=f.gettaille();
+            bool deja_fait=false;
+            while(f.gettaille() > 0){
+                pixel p=max_priorite(img,f,C,width,height,newC);
+                patch remp = remplacant(p,C,width,height,img);
+                colle(remp,p,img,C,newC,f);
+                display(img);
+                if(f.gettaille()<=taille_init/2 and not(deja_fait)){
+                    deja_fait=true;
+                    click();
+                }
+            }
+            delete[] C;
             display(img);
-        }
-        delete[] C;
-        display(img);
+            click();
         }
         endGraphics();
     }
