@@ -47,8 +47,16 @@ void ajout(frontiere &f, pixel p1, pixel p2, int W, double C[]){
                 y0=y0+dyy;
         }
         x0=x0+dxx;
-        f.affiche(RED);
     }
+    while(y0!=p2.gety()){
+        if (C[indice(W,x0,y0)]==1){
+            pixel p(x0,y0);
+            f.add(p);
+            C[indice(W,x0,y0)]=0;
+        }
+        y0=y0+dyy;
+    }
+    f.affiche(RED);
 }
 
 pixel orthogonal(pixel p){
