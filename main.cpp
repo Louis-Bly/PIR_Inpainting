@@ -131,7 +131,7 @@ void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int
     }
 }
 
-pixel max_priorite(Img img, frontiere f, double C[], int W, int H, double &confiance){
+pixel max_priorite(Img img, frontiere &f, double C[], int W, int H, double &confiance){
     double* P= new double[f.gettaille()];
     double* C_temp= new double[f.gettaille()];
     priority(img,P,C_temp,f,C,W,H);
@@ -192,6 +192,7 @@ void init_affichage(Img img,int H, int W, double C[]){
                     img(x,y)[k]=255;
         }
     }
+    display(img);
 }
 
 frontiere def_frontiere(int width, int height, double C[]){
@@ -242,6 +243,7 @@ int main() {
     double newC;
     init_confiance(C,width, height);
     init_affichage(img,height,width,C);
+    click();
     while(f.gettaille() > 0){
         pixel p=max_priorite(img,f,C,width,height,newC);
         patch remp = remplacant(p,C,width,height,img);
