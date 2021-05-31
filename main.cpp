@@ -47,8 +47,16 @@ void ajout(frontiere &f, pixel p1, pixel p2, int W, double C[]){
                 y0=y0+dyy;
         }
         x0=x0+dxx;
-        f.affiche(RED);
     }
+    while(y0!=p2.gety()){
+        if (C[indice(W,x0,y0)]==1){
+            pixel p(x0,y0);
+            f.add(p);
+            C[indice(W,x0,y0)]=0;
+        }
+        y0=y0+dyy;
+    }
+    f.affiche(RED);
 }
 
 pixel orthogonal(pixel p){
@@ -127,7 +135,8 @@ void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int
             }
         }
         C_temp[i]=C_temp[i]/compteur;
-        P[i]=C_temp[i]*abs(ps(orthogonal(gradient_patch(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
+        // P[i]=C_temp[i]*abs(ps(orthogonal(gradient_patch(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
+        P[i]=C_temp[i]*abs(ps(orthogonal(gradient_patch(img,f.get(i),W,H)),orthogonal(gradient_patch(img,f.get(i),W,H))))/alpha;
     }
 }
 
@@ -143,7 +152,7 @@ pixel max_priorite(Img img, frontiere &f, double C[], int W, int H, double &conf
             maxi=P[i];
         }
     }
-    confiance=C[indice_max];
+    confiance=C_temp[indice_max];
     return(f.get(indice_max));
 }
 
@@ -230,29 +239,30 @@ frontiere def_frontiere(int width, int height, double C[]){
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
-    if (load(img,srcPath("Image_Couleur_Test.jpg"))){ // Stop si l'image n'est pas chargee
-        int width=img.width();
-        int height=img.height();
-        openWindow(width, height);
-        display(img);
+    load(img,srcPath("test0_bis.jpg")); // Stop si l'image n'est pas chargee
+    int width=img.width();
+    int height=img.height();
+    openWindow(width, height);
+    display(img);
+    while(true){
         double* C= new double[width*height];
         for (int i=0;i<width*height;i++){
             C[i]=1;
         }
-    frontiere f = def_frontiere(width, height, C);
-    double newC;
-    init_confiance(C,width, height);
-    init_affichage(img,height,width,C);
-    click();
-    while(f.gettaille() > 0){
-        pixel p=max_priorite(img,f,C,width,height,newC);
-        patch remp = remplacant(p,C,width,height,img);
-        colle(remp,p,img,C,newC,f);
+        frontiere f = def_frontiere(width, height, C);
+        double newC;
+        init_confiance(C,width, height);
+        init_affichage(img,height,width,C);
+        while(f.gettaille() > 0){
+            pixel p=max_priorite(img,f,C,width,height,newC);
+            patch remp = remplacant(p,C,width,height,img);
+            colle(remp,p,img,C,newC,f);
+            display(img);
+        }
         display(img);
+        click();
     }
-    display(img);
-    click();
     endGraphics();
-    }
+
     return 0;
 }
