@@ -2,6 +2,7 @@
 #include <Imagine/Images.h>
 #include <Imagine/Graphics.h>
 #include <iostream>
+#include <ctime>
 
 using namespace Imagine;
 using namespace std;

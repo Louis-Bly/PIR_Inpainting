@@ -78,43 +78,47 @@ vecteur normale(pixel p, frontiere f){
         return(normalise(orthogonal((voisin[0]-voisin[1])/2)));
 }
 
-double diff(Img img,int x1, int y1, int x2, int y2){
+double diff(Img img,int x1, int y1, int x2, int y2, double C[], int W){
     int d=0;
-    for (int k=0;k<2;k++)
-        d+=img(x1,y1)[k]-img(x2,y2)[k];
+    if(C[x1+W*y1]>0 and C[x2+W*y2]){
+        for (int k=0;k<2;k++)
+            d+=img(x1,y1)[k]-img(x2,y2)[k];
+    }
     return(d/3);
 }
 
-vecteur gradient(Img img, int x, int y, int W, int H){
+vecteur gradient(Img img, int x, int y, int W, int H, double C[]){
     vecteur grad;
     double dx1=0, dx2=0, dy1=0, dy2=0;
     if (x>0)
-        dx1=diff(img,x,y,x-1,y);
+        dx1=diff(img,x,y,x-1,y,C,W);
     if (x<W-1)
-        dx2=diff(img,x+1,y,x,y);
+        dx2=diff(img,x+1,y,x,y,C,W);
     if (abs(dx1)>=abs(dx2))
         grad.setx(dx1);
     else
         grad.setx(dx2);
+//    grad.setx((dx1+dx2)/2.);
     if (y>0)
-        dy1=diff(img,x,y,x,y-1);
+        dy1=diff(img,x,y,x,y-1,C,W);
     if (y<H-1)
-        dy2=diff(img,x,y+1,x,y);
+        dy2=diff(img,x,y+1,x,y,C,W);
     if (abs(dy1)>=abs(dy2))
         grad.sety(dy1);
     else
         grad.sety(dy2);
+//    grad.sety((dy1+dy2)/2.);
     return(grad);
 }
 
-vecteur gradient_patch(Img img, pixel p, int W, int H){
+vecteur gradient_patch(Img img, pixel p, int W, int H, double C[]){
     int x=p.getx();
     int y=p.gety();
     double norme2_max=0;
     vecteur grad_max;
     for (int j=-N/2; j<=N/2; j++){
         for (int k=-N/2; k<=N/2; k++){
-            vecteur grad=gradient(img,x+j,y+k,W,H);
+            vecteur grad=gradient(img,x+j,y+k,W,H,C);
             if (norme(grad)>=norme2_max){
                 grad_max.setx(grad.getx());
                 grad_max.sety(grad.gety());
@@ -136,7 +140,7 @@ void priority(Img img, double P[], double C_temp[], frontiere f, double C[], int
         }
         C_temp[i]=C_temp[i]/compteur;
         // P[i]=C_temp[i]*abs(ps(orthogonal(gradient_patch(img,f.get(i),W,H)),normale(f.get(i),f)))/alpha;
-        P[i]=C_temp[i]*abs(ps(orthogonal(gradient_patch(img,f.get(i),W,H)),orthogonal(gradient_patch(img,f.get(i),W,H))))/alpha;
+        P[i]=C_temp[i]*abs(ps(orthogonal(gradient_patch(img,f.get(i),W,H,C)),orthogonal(gradient_patch(img,f.get(i),W,H,C))))/alpha;
     }
 }
 
@@ -151,14 +155,16 @@ pixel max_priorite(Img img, frontiere f, double C[], int W, int H, double &confi
             indice_max=i;
             maxi=P[i];
         }
+        //fillRect(f.get(i).getx(), f.get(i).gety(),1,1,BLACK);
     }
     confiance=C_temp[indice_max];
     return(f.get(indice_max));
 }
 
-void init_confiance(double C[], int W, int H){
+void init_confiance(double C[], int W, int H, double& t){
     pixel* chemin= new pixel[W*H];
     chemin[0].mouse();
+    t = double(clock())/CLOCKS_PER_SEC;
     int compteur=1;
     int boucle=0;
     while (compteur>boucle && compteur<W*H){
@@ -211,6 +217,7 @@ frontiere def_frontiere(int width, int height, double C[]){
     int i; // Si i=1 alors le clic est un clic gauche, si i=3 alors le clic est un clic droit
     // Initialisation du premier sommet
     i = p0.mouse();
+    cout << p0.getx() << " " << p0.gety() << endl;
     // Initialisation des variables x_prec et y_prec
     prec=p0;
     // Boucle principale qui s'execute tant que le polygone n'est pas ferme
@@ -218,6 +225,7 @@ frontiere def_frontiere(int width, int height, double C[]){
     {
         // Position et nature du nouveau clic
         i = actuel.mouse();
+        cout << actuel.getx() << " " << actuel.gety() << endl;
         // Trace du nouveau segment reliant le sommet precedent et le sommet qui vient d'etre clique
         //drawLine(prec.getx(),prec.gety(),actuel.getx(),actuel.gety(),GREEN);
         ajout(f,prec,actuel,width,C);
@@ -235,31 +243,77 @@ frontiere def_frontiere(int width, int height, double C[]){
     return f;
 }
 
+frontiere def_frontiere2(int width, int height, double C[]){
+    frontiere f(width,height);
+    pixel p0(120,92),
+          p1(119,112),
+          p2(140,112),
+          p3(140,92);
+
+
+        ajout(f,p0,p1,width,C);
+        f.affiche(RED);
+
+        ajout(f,p1,p2,width,C);
+        f.affiche(RED);
+
+        ajout(f,p2,p3,width,C);
+        f.affiche(RED);
+
+        ajout(f,p3,p0,width,C);
+        f.affiche(RED);
+
+
+    return f;
+}
+
 int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
-    load(img,srcPath("test0_bis.jpg")); // Stop si l'image n'est pas chargee
+    load(img,srcPath("4.jpg")); // Stop si l'image n'est pas chargee
     int width=img.width();
     int height=img.height();
     openWindow(width, height);
     display(img);
+    double global_deb, global_fin;
+    double prio_deb, prio_fin;
+    double prio_tot = 0.;
+    double rempla_deb, rempla_fin;
+    double rempla_tot = 0;
     while(true){
         double* C= new double[width*height];
         for (int i=0;i<width*height;i++){
             C[i]=1;
         }
-        frontiere f = def_frontiere(width, height, C);
+        frontiere f(width, height);
+        f = def_frontiere(width, height, C);
         double newC;
-        init_confiance(C,width, height);
+
+        init_confiance(C,width, height, global_deb);
         init_affichage(img,height,width,C);
         while(f.gettaille() > 0){
+            prio_deb = double(clock())/CLOCKS_PER_SEC;
             pixel p=max_priorite(img,f,C,width,height,newC);
+            //fillRect(p.getx(), p.gety(), 1, 1, BLACK);
+            prio_fin = double(clock())/CLOCKS_PER_SEC;
+            prio_tot += prio_fin - prio_deb;
+
+            rempla_deb = double(clock())/CLOCKS_PER_SEC;
             patch remp = remplacant(p,C,width,height,img);
-            colle(remp,p,img,C,newC,f);
+            rempla_fin = double(clock())/CLOCKS_PER_SEC;
+            rempla_tot += rempla_fin - rempla_deb;
             display(img);
+            colle(remp,p,img,C,newC,f);
+
+        global_fin = double(clock())/CLOCKS_PER_SEC;
         }
+        cout << "temps =" << global_fin - global_deb << endl;
+        cout << "temps de max_priorite =" << prio_tot << endl;
+        cout << "temps de remplacant =" << rempla_tot << endl;
+
         display(img);
         click();
+
     }
     endGraphics();
 
