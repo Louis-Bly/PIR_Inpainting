@@ -48,7 +48,7 @@ void ajout(frontiere &f, pixel p1, pixel p2, int W, double C[]){
         }
         x0=x0+dxx;
     }
-    while(y0!=p2.gety()){
+    while(y0!=p2.gety() && (y0-p2.gety())/dyy==-1){
         if (C[indice(W,x0,y0)]==1){
             pixel p(x0,y0);
             f.add(p);
