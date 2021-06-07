@@ -129,8 +129,8 @@ void colle(patch pat, pixel pi, Img img, double* C, float newC, frontiere &front
         }
     }
     front.del_patch(pixel(pi.getx(),pi.gety()));
-    for(int i=-ceil(N/2);i<ceil(N/2)+1;i++){
-        for(int j=-ceil(N/2);j<ceil(N/2)+1;j++){
+    for(int i=-ceil(N/2)-1;i<ceil(N/2)+1;i++){
+        for(int j=-ceil(N/2)-1;j<ceil(N/2)+1;j++){
             if(C[int(x+i+W*(y+j))] == 0){
                 front.add(pixel(x+i,y+j)); //On renouvelle la frontière
             }
