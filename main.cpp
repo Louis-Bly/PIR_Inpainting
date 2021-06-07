@@ -48,7 +48,7 @@ void ajout(frontiere &f, pixel p1, pixel p2, int W, double C[]){
         }
         x0=x0+dxx;
     }
-    while(y0!=p2.gety() && (y0-p2.gety())/dyy==-1){
+    while(y0!=p2.gety() && (y0-p2.gety())/dyy<0){
         if (C[indice(W,x0,y0)]==1){
             pixel p(x0,y0);
             f.add(p);
@@ -272,7 +272,7 @@ int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
 
-    load(img,srcPath("restauration_6")); // Stop si l'image n'est pas chargee
+    load(img,srcPath("restauration_bis")); // Stop si l'image n'est pas chargee
     int width=img.width();
     int height=img.height();
     openWindow(width, height);
@@ -312,7 +312,7 @@ int main() {
         cout << "temps =" << global_fin - global_deb << endl;
         cout << "temps de max_priorite =" << prio_tot << endl;
         cout << "temps de remplacant =" << rempla_tot << endl;
-
+        delete[] C;
         display(img);
         click();
 
