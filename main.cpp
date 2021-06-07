@@ -272,7 +272,7 @@ int main() {
     // Img est un type representant une image et img est le nom de la variable
     Img img;
 
-    load(img,srcPath("restauration")); // Stop si l'image n'est pas chargee
+    load(img,srcPath("restauration_6")); // Stop si l'image n'est pas chargee
     int width=img.width();
     int height=img.height();
     openWindow(width, height);
